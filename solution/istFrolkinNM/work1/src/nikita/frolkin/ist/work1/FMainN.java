@@ -5,6 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -25,6 +26,14 @@ public class FMainN extends Application {
     public void start(Stage primaryStage) throws Exception{
         this.fprimaryStagen = primaryStage;
         fprimaryStagen.setTitle("Address Book");
+        String fImagePathn = String.format(
+                "%2$s%1$s%3$s%1$s%4$s",
+                File.separator,
+                "resources",
+                "images",
+                "address_book_icon.png"
+        );
+        this.fprimaryStagen.getIcons().add(new Image("file:" + fImagePathn));
         fInitRootN();
         fSetPersonOverviewN();
         fSetPersonDataN();
