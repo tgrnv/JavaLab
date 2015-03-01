@@ -9,18 +9,26 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import nikita.frolkin.ist.work1.model.FPersonListWrapperN;
 import nikita.frolkin.ist.work1.model.FPersonN;
 import nikita.frolkin.ist.work1.view.FPersonEditControllerN;
 import nikita.frolkin.ist.work1.view.FPersonOverviewControllerN;
+import nikita.frolkin.ist.work1.view.FRootLayoutControllerN;
+import org.controlsfx.dialog.Dialogs;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.io.IOException;
+import java.util.prefs.Preferences;
 
 public class FMainN extends Application {
     public static final String fVIEW_SUBDIRn = "view";
     private Stage fprimaryStagen;
     private BorderPane frootLayoutn;
     private ObservableList<FPersonN> fpersonDatan = FXCollections.observableArrayList();
+    private Preferences fPrefsn = Preferences.userNodeForPackage(FMainN.class);
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -36,7 +44,6 @@ public class FMainN extends Application {
         this.fprimaryStagen.getIcons().add(new Image("file:" + fImagePathn));
         fInitRootN();
         fSetPersonOverviewN();
-        fSetPersonDataN();
     }
 
     public static void main(String[] args) {
@@ -55,9 +62,14 @@ public class FMainN extends Application {
             frootLayoutn = floadern.load();
             fprimaryStagen.setScene(new Scene(frootLayoutn));
             fprimaryStagen.setResizable(false);
+            ((FRootLayoutControllerN)floadern.getController()).fSetMainN(this);
             fprimaryStagen.show();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        File fFilen = fGetPersonFilePathN();
+        if (fFilen != null) {
+            fLoadDataFromFileN(fFilen);
         }
     }
 
@@ -117,5 +129,54 @@ public class FMainN extends Application {
 
     public ObservableList<FPersonN> fGetPersonDataN() {
         return fpersonDatan;
+    }
+
+    public File fGetPersonFilePathN() {
+        String ffilePathn = fPrefsn.get("filePath", null);
+        return ffilePathn != null ? new File(ffilePathn) : null;
+    }
+
+    public void fSetPersonFilePathN(File ffilen) {
+        if (ffilen != null)
+            fPrefsn.put("filePath", ffilen.getPath());
+        else
+            fPrefsn.remove("filePath");
+    }
+
+    public void fLoadDataFromFileN(File ffilen) {
+        try {
+            JAXBContext fContextn = JAXBContext.newInstance(FPersonListWrapperN.class);
+            Unmarshaller fUmn = fContextn.createUnmarshaller();
+            FPersonListWrapperN fWrappern = (FPersonListWrapperN) fUmn.unmarshal(ffilen);
+            fpersonDatan.clear();
+            fpersonDatan.addAll(fWrappern.fGetPersonsN());
+            fSetPersonFilePathN(ffilen);
+        } catch (Exception e) {
+            Dialogs.create()
+                    .title("Error")
+                    .masthead("Could not load data from file:\n" + ffilen.getPath())
+                    .showException(e);
+        }
+    }
+
+    public void fSaveDataToFileN(File ffilen) {
+        try {
+            JAXBContext fContextn = JAXBContext.newInstance(FPersonListWrapperN.class);
+            Marshaller fMn = fContextn.createMarshaller();
+            fMn.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            FPersonListWrapperN fWrappern = new FPersonListWrapperN();
+            fWrappern.fSetPersonsN(fpersonDatan);
+            fMn.marshal(fWrappern, ffilen);
+            fSetPersonFilePathN(ffilen);
+        } catch (Exception e) {
+            Dialogs.create()
+                    .title("Error")
+                    .masthead("Could not save data to file:\n" + ffilen.getPath())
+                    .showException(e);
+        }
+    }
+
+    public Stage fGetPrimaryStageN() {
+        return fprimaryStagen;
     }
 }

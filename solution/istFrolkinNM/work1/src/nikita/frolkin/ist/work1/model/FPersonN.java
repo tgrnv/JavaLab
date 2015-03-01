@@ -25,7 +25,7 @@ public class FPersonN {
         this.fstreetn = new SimpleStringProperty("some street");
         this.fpostalCoden = new SimpleIntegerProperty(1234);
         this.fcityn = new SimpleStringProperty("some sity");
-        this.fbirthdayn = new SimpleObjectProperty<>(LocalDate.of(1999, 2, 21));
+        this.fbirthdayn = new SimpleObjectProperty<LocalDate>(LocalDate.of(1999, 2, 21));
     }
 
     public String fGetFirstNameN() {
