@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.BorderPane?>
+
 <BorderPane prefHeight="430.0" prefWidth="900.0" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nikita.frolkin.ist.work1.view.FRootLayoutControllerN">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
@@ -18,16 +22,6 @@
                   </MenuItem>
                   <MenuItem mnemonicParsing="false" onAction="#fHandleSaveAsN" text="Save as..." />
                   <MenuItem mnemonicParsing="false" onAction="#fHandleExitN" text="Exit" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Edit">
-            <items>
-              <MenuItem mnemonicParsing="false" text="Delete" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Help">
-            <items>
-              <MenuItem mnemonicParsing="false" text="About" />
             </items>
           </Menu>
         </menus>
