@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="256.0" prefWidth="426.0" styleClass="background" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nikita.frolkin.ist.work1.view.FPersonEditControllerN">
    <children>
       <GridPane layoutX="14.0" layoutY="14.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
@@ -29,7 +31,7 @@
             <TextField fx:id="fstreetFieldn" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <TextField fx:id="fcityFieldn" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <TextField fx:id="fpostalCodeFieldn" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-            <TextField fx:id="fbirthdayFieldn" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <DatePicker fx:id="fbirthdayFieldn" editable="false" promptText="dd.MM.yyyy" showWeekNumbers="true" stylesheets="@DarkTheme.css" GridPane.columnIndex="1" GridPane.rowIndex="5" />
          </children>
       </GridPane>
       <HBox layoutX="213.0" layoutY="207.0" prefHeight="25.0" spacing="15.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="20.0">

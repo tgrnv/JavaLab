@@ -1,12 +1,18 @@
 package nikita.frolkin.ist.work1.model;
 
 import javafx.beans.property.*;
+import nikita.frolkin.ist.work1.util.FLocalDateAdapterN;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDate;
 
 /**
  * @author tervaskanto on 24.02.15
  */
+@XmlAccessorType(XmlAccessType.NONE)
 public class FPersonN {
     private final StringProperty ffirstNamen;
     private final StringProperty flastNamen;
@@ -19,20 +25,21 @@ public class FPersonN {
         this(null, null);
     }
 
-    public FPersonN(String ffirstNamen, String flastNamen) {
-        this.ffirstNamen = new SimpleStringProperty(ffirstNamen);
-        this.flastNamen = new SimpleStringProperty(flastNamen);
-        this.fstreetn = new SimpleStringProperty("some street");
-        this.fpostalCoden = new SimpleIntegerProperty(1234);
-        this.fcityn = new SimpleStringProperty("some sity");
-        this.fbirthdayn = new SimpleObjectProperty<LocalDate>(LocalDate.of(1999, 2, 21));
+    public FPersonN(String firstName, String lastName) {
+        this.ffirstNamen = new SimpleStringProperty(firstName);
+        this.flastNamen = new SimpleStringProperty(lastName);
+        this.fstreetn = new SimpleStringProperty();
+        this.fpostalCoden = new SimpleIntegerProperty();
+        this.fcityn = new SimpleStringProperty();
+        this.fbirthdayn = new SimpleObjectProperty<>();
     }
 
-    public String fGetFirstNameN() {
+    @XmlElement(name = "firstName")
+    public String getFirstName() {
         return ffirstNamen.get();
     }
 
-    public void fSetFirstNameN(String ffirstNamen) {
+    public void setFirstName(String ffirstNamen) {
         this.ffirstNamen.set(ffirstNamen);
     }
 
@@ -40,11 +47,12 @@ public class FPersonN {
         return ffirstNamen;
     }
 
-    public String fGetLastNameN() {
+    @XmlElement(name = "lastName")
+    public String getLastName() {
         return flastNamen.get();
     }
 
-    public void fSetLastNameN(String flastNamen) {
+    public void setLastName(String flastNamen) {
         this.flastNamen.set(flastNamen);
     }
 
@@ -52,11 +60,12 @@ public class FPersonN {
         return flastNamen;
     }
 
-    public String fGetStreetN() {
+    @XmlElement(name = "street")
+    public String getStreet() {
         return fstreetn.get();
     }
 
-    public void fSetStreetN(String fstreetn) {
+    public void setStreet(String fstreetn) {
         this.fstreetn.set(fstreetn);
     }
 
@@ -64,11 +73,12 @@ public class FPersonN {
         return fstreetn;
     }
 
-    public int fGetPostalCodeN() {
+    @XmlElement(name = "postalCode")
+    public int getPostalCode() {
         return fpostalCoden.get();
     }
 
-    public void fSetPostalCodeN(int fpostalCoden) {
+    public void setPostalCode(int fpostalCoden) {
         this.fpostalCoden.set(fpostalCoden);
     }
 
@@ -76,11 +86,12 @@ public class FPersonN {
         return fpostalCoden;
     }
 
-    public String fGetCityN() {
+    @XmlElement(name = "city")
+    public String getCity() {
         return fcityn.get();
     }
 
-    public void fSetCityN(String fcityn) {
+    public void setCity(String fcityn) {
         this.fcityn.set(fcityn);
     }
 
@@ -88,11 +99,12 @@ public class FPersonN {
         return fcityn;
     }
 
-    public LocalDate fGetBirthdayN() {
+    @XmlJavaTypeAdapter(FLocalDateAdapterN.class)
+    public LocalDate getBirthday() {
         return fbirthdayn.get();
     }
 
-    public void fSetBirthdayN(LocalDate fbirthdayn) {
+    public void setBirthday(LocalDate fbirthdayn) {
         this.fbirthdayn.set(fbirthdayn);
     }
 

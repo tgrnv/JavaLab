@@ -1,5 +1,6 @@
 package nikita.frolkin.ist.work1.view;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -7,6 +8,8 @@ import javafx.scene.control.TableView;
 import nikita.frolkin.ist.work1.FMainN;
 import nikita.frolkin.ist.work1.model.FPersonN;
 import org.controlsfx.dialog.Dialogs;
+
+import java.time.format.DateTimeFormatter;
 
 /**
  * @author tervaskanto on 24.02.15
@@ -30,29 +33,40 @@ public class FPersonOverviewControllerN {
     private Label fcityLabeln;
     @FXML
     private Label fbirthdayLabeln;
-    private FMainN fmainn;
+    public static final String fDATE_PATTERNn = "dd.MM.yyyy";
+    public static final DateTimeFormatter fformattern = DateTimeFormatter.ofPattern(fDATE_PATTERNn);
 
     @FXML
     private void initialize() {
-        ffirstNameColumnn.setCellValueFactory(fcellDatan -> fcellDatan.getValue().fFirstNamePropertyN());
-        flastNameColumnn.setCellValueFactory(fcellDatan -> fcellDatan.getValue().fLastNamePropertyN());
-        fpersonTablen.getSelectionModel().selectedItemProperty().addListener((fobservablen, foldValuen, fnewValuen) -> fShowPersonDetailsN(fnewValuen));
+        ffirstNameColumnn.setCellValueFactory(firstNameCellData -> firstNameCellData.getValue().fFirstNamePropertyN());
+        flastNameColumnn.setCellValueFactory(lastNameCellData -> lastNameCellData.getValue().fLastNamePropertyN());
+        fpersonTablen.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> fShowPersonDetailsN(newValue));
     }
 
-    public void fSetMainN(FMainN fmainn) {
-        this.fmainn = fmainn;
-        fpersonTablen.setItems(fmainn.fGetPersonDataN());
+    public void fSetItemsN(ObservableList<FPersonN> personsList) {
+        fpersonTablen.setItems(personsList);
     }
 
     private void fShowPersonDetailsN(FPersonN fpersonn) {
         if (fpersonn != null) {
-            ffirstNameLabeln.setText(fpersonn.fGetFirstNameN());
-            flastNameLabeln.setText(fpersonn.fGetLastNameN());
-            fstreetLabeln.setText(fpersonn.fGetStreetN());
-            fpostalCodeLabeln.setText(Integer.toString(fpersonn.fGetPostalCodeN()));
-            fcityLabeln.setText(fpersonn.fGetCityN());
-            fbirthdayLabeln.setText(fpersonn.fGetBirthdayN().toString());
+            ffirstNameLabeln.setText(fpersonn.getFirstName());
+            flastNameLabeln.setText(fpersonn.getLastName());
+            fstreetLabeln.setText(fpersonn.getStreet());
+            fpostalCodeLabeln.setText(Integer.toString(fpersonn.getPostalCode()));
+            fcityLabeln.setText(fpersonn.getCity());
+            fbirthdayLabeln.setText(fpersonn.getBirthday().format(fformattern));
+        } else {
+            fClearN();
         }
+    }
+
+    private void fClearN() {
+        ffirstNameLabeln.setText(null);
+        flastNameLabeln.setText(null);
+        fstreetLabeln.setText(null);
+        fpostalCodeLabeln.setText(null);
+        fcityLabeln.setText(null);
+        fbirthdayLabeln.setText(null);
     }
 
     @FXML
@@ -64,16 +78,16 @@ public class FPersonOverviewControllerN {
     @FXML
     private void fHandleNewPersonN() {
         FPersonN fTempPerson = new FPersonN();
-        boolean fOkClickedn = fmainn.fEditDialogN(fTempPerson);
+        boolean fOkClickedn = FMainN.fGetInstanceN().fEditDialogN(fTempPerson);
         if (fOkClickedn)
-            fmainn.fGetPersonDataN().add(fTempPerson);
+            FMainN.fGetInstanceN().fGetPersonDataN().add(fTempPerson);
     }
 
     @FXML
     private void fHandleEditPerson() {
         FPersonN fselectedPersonn = fpersonTablen.getSelectionModel().getSelectedItem();
         if (fselectedPersonn != null) {
-            boolean fOkClicked = fmainn.fEditDialogN(fselectedPersonn);
+            boolean fOkClicked = FMainN.fGetInstanceN().fEditDialogN(fselectedPersonn);
             if (fOkClicked)
                 fShowPersonDetailsN(fselectedPersonn);
         } else {

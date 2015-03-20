@@ -85,6 +85,10 @@
     -fx-background-color: derive(#1d1d1d,20%);
 }
 
+.date-picker-popup > .month-year-pane {
+    -fx-base: black;
+}
+
 .context-menu
 {
     -fx-background-color: derive(#1d1d1d,50%);

@@ -13,7 +13,6 @@ import nikita.frolkin.ist.work1.model.FPersonListWrapperN;
 import nikita.frolkin.ist.work1.model.FPersonN;
 import nikita.frolkin.ist.work1.view.FPersonEditControllerN;
 import nikita.frolkin.ist.work1.view.FPersonOverviewControllerN;
-import nikita.frolkin.ist.work1.view.FRootLayoutControllerN;
 import org.controlsfx.dialog.Dialogs;
 
 import javax.xml.bind.JAXBContext;
@@ -21,6 +20,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.prefs.Preferences;
 
 public class FMainN extends Application {
@@ -29,21 +29,30 @@ public class FMainN extends Application {
     private BorderPane frootLayoutn;
     private ObservableList<FPersonN> fpersonDatan = FXCollections.observableArrayList();
     private Preferences fPrefsn = Preferences.userNodeForPackage(FMainN.class);
+    private JAXBContext fJaxbContextn;
+    private FPersonListWrapperN fPersonsWrappern = new FPersonListWrapperN();
+    private static FMainN fInstancen;
+
+    public static FMainN fGetInstanceN() {
+        return fInstancen;
+    }
 
     @Override
     public void start(Stage primaryStage) throws Exception{
         this.fprimaryStagen = primaryStage;
         fprimaryStagen.setTitle("Address Book");
-        String fImagePathn = String.format(
+        String imagePath = String.format(
                 "%2$s%1$s%3$s%1$s%4$s",
                 File.separator,
                 "resources",
                 "images",
                 "address_book_icon.png"
         );
-        this.fprimaryStagen.getIcons().add(new Image("file:" + fImagePathn));
+        this.fprimaryStagen.getIcons().add(new Image("file:" + imagePath));
+        fJaxbContextn = JAXBContext.newInstance(FPersonListWrapperN.class);
         fInitRootN();
         fSetPersonOverviewN();
+        fInstancen = this;
     }
 
     public static void main(String[] args) {
@@ -52,79 +61,60 @@ public class FMainN extends Application {
 
     private void fInitRootN() {
         try {
-            FXMLLoader floadern = new FXMLLoader();
-            floadern.setLocation(getClass().getResource(String.format(
-                    "%s%s%s",
-                    fVIEW_SUBDIRn,
-                    File.separator,
-                    "RootLayout.fxml"
-            )));
-            frootLayoutn = floadern.load();
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(fGetLocationFXMLN("RootLayout.fxml"));
+            frootLayoutn = loader.load();
             fprimaryStagen.setScene(new Scene(frootLayoutn));
             fprimaryStagen.setResizable(false);
-            ((FRootLayoutControllerN)floadern.getController()).fSetMainN(this);
             fprimaryStagen.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        File fFilen = fGetPersonFilePathN();
-        if (fFilen != null) {
-            fLoadDataFromFileN(fFilen);
+        File file = fGetPersonFilePathN();
+        if (file != null) {
+            fLoadDataFromFileN(file);
         }
     }
 
     private void fSetPersonOverviewN() {
         try {
-            FXMLLoader floadern = new FXMLLoader();
-            floadern.setLocation(getClass().getResource(String.format(
-                    "%s%s%s",
-                    fVIEW_SUBDIRn,
-                    File.separator,
-                    "PersonOverview.fxml"
-            )));
-            frootLayoutn.setCenter(floadern.load());
-            FPersonOverviewControllerN fcontrollern = floadern.getController();
-            fcontrollern.fSetMainN(this);
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(fGetLocationFXMLN("PersonOverview.fxml"));
+            frootLayoutn.setCenter(loader.load());
+            FPersonOverviewControllerN controller = loader.getController();
+            controller.fSetItemsN(fGetPersonDataN());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void fSetPersonDataN() {
-        fpersonDatan.add(new FPersonN("Hans", "Muster"));
-        fpersonDatan.add(new FPersonN("Ruth", "Mueller"));
-        fpersonDatan.add(new FPersonN("Heinz", "Kurz"));
-        fpersonDatan.add(new FPersonN("Cornelia", "Meier"));
-        fpersonDatan.add(new FPersonN("Werner", "Meyer"));
-        fpersonDatan.add(new FPersonN("Lydia", "Kunz"));
-        fpersonDatan.add(new FPersonN("Anna", "Best"));
-        fpersonDatan.add(new FPersonN("Stefan", "Meier"));
-        fpersonDatan.add(new FPersonN("Martin", "Mueller"));
-    }
-
-    public boolean fEditDialogN(FPersonN fPersonn) {
+    public boolean fEditDialogN(FPersonN person) {
         try {
-            FXMLLoader floadern = new FXMLLoader();
-            floadern.setLocation(getClass().getResource(String.format(
-                    "%s%s%s",
-                    fVIEW_SUBDIRn,
-                    File.separator,
-                    "PersonEditDialog.fxml"
-            )));
-            Stage fdialogStagen = new Stage();
-            fdialogStagen.setTitle("Edit Person");
-            fdialogStagen.initModality(Modality.WINDOW_MODAL);
-            fdialogStagen.initOwner(fprimaryStagen);
-            fdialogStagen.setScene(new Scene(floadern.load()));
-            FPersonEditControllerN fcontrollern = floadern.getController();
-            fcontrollern.fSetDialogStageN(fdialogStagen);
-            fcontrollern.fSetPersonN(fPersonn);
-            fdialogStagen.showAndWait();
-            return fcontrollern.fIsOkClickedN();
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(fGetLocationFXMLN("PersonEditDialog.fxml"));
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Edit Person");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(fprimaryStagen);
+            dialogStage.setScene(new Scene(loader.load()));
+            FPersonEditControllerN controller = loader.getController();
+            controller.fSetDialogStageN(dialogStage);
+            controller.fSetPersonN(person);
+            dialogStage.showAndWait();
+            return controller.fIsOkClickedN();
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
+    }
+
+    private URL fGetLocationFXMLN(String fxmlName) {
+        return getClass().getResource(String.format(
+                "%s%s%s",
+                fVIEW_SUBDIRn,
+                File.separator,
+                fxmlName.endsWith(".fxml") ? fxmlName : fxmlName + ".fxml"
+        ));
     }
 
     public ObservableList<FPersonN> fGetPersonDataN() {
@@ -132,46 +122,45 @@ public class FMainN extends Application {
     }
 
     public File fGetPersonFilePathN() {
-        String ffilePathn = fPrefsn.get("filePath", null);
-        return ffilePathn != null ? new File(ffilePathn) : null;
+        String filePath = fPrefsn.get("filePath", null);
+        return filePath != null ? new File(filePath) : null;
     }
 
-    public void fSetPersonFilePathN(File ffilen) {
-        if (ffilen != null)
-            fPrefsn.put("filePath", ffilen.getPath());
-        else
-            fPrefsn.remove("filePath");
-    }
-
-    public void fLoadDataFromFileN(File ffilen) {
+    public void fSetPersonFilePathN(File file) {
         try {
-            JAXBContext fContextn = JAXBContext.newInstance(FPersonListWrapperN.class);
-            Unmarshaller fUmn = fContextn.createUnmarshaller();
-            FPersonListWrapperN fWrappern = (FPersonListWrapperN) fUmn.unmarshal(ffilen);
+            fPrefsn.put("filePath", file.getPath());
+        } catch (NullPointerException e) {
+            fPrefsn.remove("filePath");
+        }
+    }
+
+    public void fLoadDataFromFileN(File file) {
+        try {
+            Unmarshaller unmarshaller = fJaxbContextn.createUnmarshaller();
+            FPersonListWrapperN persons = (FPersonListWrapperN) unmarshaller.unmarshal(file);
+            fPersonsWrappern.setPersons(persons.getPersons());
             fpersonDatan.clear();
-            fpersonDatan.addAll(fWrappern.fGetPersonsN());
-            fSetPersonFilePathN(ffilen);
+            fpersonDatan.addAll(fPersonsWrappern.getPersons());
+            fSetPersonFilePathN(file);
         } catch (Exception e) {
             Dialogs.create()
                     .title("Error")
-                    .masthead("Could not load data from file:\n" + ffilen.getPath())
+                    .masthead("Could not load data from file:\n" + file.getPath())
                     .showException(e);
         }
     }
 
-    public void fSaveDataToFileN(File ffilen) {
+    public void fSaveDataToFileN(File file) {
         try {
-            JAXBContext fContextn = JAXBContext.newInstance(FPersonListWrapperN.class);
-            Marshaller fMn = fContextn.createMarshaller();
-            fMn.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            FPersonListWrapperN fWrappern = new FPersonListWrapperN();
-            fWrappern.fSetPersonsN(fpersonDatan);
-            fMn.marshal(fWrappern, ffilen);
-            fSetPersonFilePathN(ffilen);
+            Marshaller marshaller = fJaxbContextn.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            fPersonsWrappern.setPersons(fpersonDatan);
+            marshaller.marshal(fPersonsWrappern, file);
+            fSetPersonFilePathN(file);
         } catch (Exception e) {
             Dialogs.create()
                     .title("Error")
-                    .masthead("Could not save data to file:\n" + ffilen.getPath())
+                    .masthead("Could not save data to file:\n" + file.getPath())
                     .showException(e);
         }
     }

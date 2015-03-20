@@ -1,6 +1,7 @@
 package nikita.frolkin.ist.work1.view;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import nikita.frolkin.ist.work1.model.FPersonN;
@@ -22,7 +23,7 @@ public class FPersonEditControllerN {
     @FXML
     private TextField fcityFieldn;
     @FXML
-    private TextField fbirthdayFieldn;
+    private DatePicker fbirthdayFieldn;
     private Stage fdialogStagen;
     private FPersonN fpersonn;
     private boolean fOkClickedn = false;
@@ -30,19 +31,17 @@ public class FPersonEditControllerN {
     @FXML
     private void initialize() {}
 
-    public void fSetDialogStageN(Stage fdialogStagen) {
-        this.fdialogStagen = fdialogStagen;
+    public void fSetDialogStageN(Stage dialogStage) {
+        this.fdialogStagen = dialogStage;
     }
 
     public void fSetPersonN(FPersonN fpersonn) {
         this.fpersonn = fpersonn;
-        ffirstNameFieldn.setText(fpersonn.fGetFirstNameN());
-        flastNameFieldn.setText(fpersonn.fGetLastNameN());
-        fstreetFieldn.setText(fpersonn.fGetStreetN());
-        fpostalCodeFieldn.setText(Integer.toString(fpersonn.fGetPostalCodeN()));
-        fcityFieldn.setText(fpersonn.fGetCityN());
-        fbirthdayFieldn.setText(FDateUtilN.fFormatN(fpersonn.fGetBirthdayN()));
-        fbirthdayFieldn.setPromptText(FDateUtilN.fDATE_PATTERNn);
+        ffirstNameFieldn.setText(fpersonn.getFirstName());
+        flastNameFieldn.setText(fpersonn.getLastName());
+        fstreetFieldn.setText(fpersonn.getStreet());
+        fpostalCodeFieldn.setText(Integer.toString(fpersonn.getPostalCode()));
+        fcityFieldn.setText(fpersonn.getCity());
     }
 
     public boolean fIsOkClickedN() {
@@ -52,12 +51,12 @@ public class FPersonEditControllerN {
     @FXML
     private void fHandleOkN() {
         if (fIsInputValidN()) {
-            fpersonn.fSetFirstNameN(ffirstNameFieldn.getText());
-            fpersonn.fSetLastNameN(flastNameFieldn.getText());
-            fpersonn.fSetStreetN(fstreetFieldn.getText());
-            fpersonn.fSetPostalCodeN(Integer.parseInt(fpostalCodeFieldn.getText()));
-            fpersonn.fSetCityN(fcityFieldn.getText());
-            fpersonn.fSetBirthdayN(FDateUtilN.fParseN(fbirthdayFieldn.getText()));
+            fpersonn.setFirstName(ffirstNameFieldn.getText());
+            fpersonn.setLastName(flastNameFieldn.getText());
+            fpersonn.setStreet(fstreetFieldn.getText());
+            fpersonn.setPostalCode(Integer.parseInt(fpostalCodeFieldn.getText()));
+            fpersonn.setCity(fcityFieldn.getText());
+            fpersonn.setBirthday(fbirthdayFieldn.getValue());
             fOkClickedn = true;
             fdialogStagen.close();
         }
@@ -68,36 +67,27 @@ public class FPersonEditControllerN {
         fdialogStagen.close();
     }
 
+    private String fCheckEmptyTextFieldN(String pattern, String needToValidate, String info) {
+        if (needToValidate == null || !needToValidate.matches(pattern))
+            return info;
+        else
+            return "";
+    }
+
     private boolean fIsInputValidN() {
-        StringBuilder fErrorMessagen = new StringBuilder();
-        if (ffirstNameFieldn.getText() == null || ffirstNameFieldn.getText().length() == 0)
-            fErrorMessagen.append("No valid first name!\n");
-        if (flastNameFieldn.getText() == null || flastNameFieldn.getText().length() == 0)
-            fErrorMessagen.append("No valid last name!\n");
-        if (fstreetFieldn.getText() == null || fstreetFieldn.getText().length() == 0)
-            fErrorMessagen.append("No valid street!\n");
-        if (fpostalCodeFieldn.getText() == null || fpostalCodeFieldn.getText().length() == 0)
-            fErrorMessagen.append("No valid postal code!\n");
-        else
-            try {
-                Integer.parseInt(fpostalCodeFieldn.getText());
-            } catch (NumberFormatException e) {
-                fErrorMessagen.append("No valid postal code!\n");
-            }
-        if (fcityFieldn.getText() == null || fcityFieldn.getText().length() == 0)
-            fErrorMessagen.append("No valid city!\n");
-        if (fbirthdayFieldn.getText() == null || fbirthdayFieldn.getText().length() == 0)
-            fErrorMessagen.append("No valid birthday!\n");
-        else
-            if (!FDateUtilN.fValidDateN(fbirthdayFieldn.getText()))
-                fErrorMessagen.append("No valid birthday. Must be: dd.mm.yyyy\n");
-        if (fErrorMessagen.length() == 0)
+        StringBuilder errorMessage = new StringBuilder();
+        errorMessage.append(fCheckEmptyTextFieldN("^[A-Za-z- ]+$", ffirstNameFieldn.getText(), "No valid first name!\n"));
+        errorMessage.append(fCheckEmptyTextFieldN("^[A-Za-z- ]+$", flastNameFieldn.getText(), "No valid last name!\n"));
+        errorMessage.append(fCheckEmptyTextFieldN("^[A-Za-z- ,]+$", fstreetFieldn.getText(), "No valid street!\\n"));
+        errorMessage.append(fCheckEmptyTextFieldN("^[A-Za-z- ]+$", fcityFieldn.getText(), "No valid city!\n"));
+        errorMessage.append(fCheckEmptyTextFieldN("^[0-9]{4,6}$", fpostalCodeFieldn.getText(), "No valid postal code!\n"));
+        if (errorMessage.length() == 0)
             return true;
         else {
             Dialogs.create()
                 .title("Invalid fields")
                 .masthead("Please correct invalid fields")
-                .message(fErrorMessagen.toString())
+                .message(errorMessage.toString())
                 .showError();
             return false;
         }
