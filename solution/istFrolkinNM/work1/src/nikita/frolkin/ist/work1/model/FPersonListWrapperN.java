@@ -14,14 +14,15 @@ import java.util.List;
 @XmlRootElement(name = "persons")
 @XmlAccessorType(XmlAccessType.NONE)
 public class FPersonListWrapperN {
-    private List<FPersonN> fPersonsn;
-
     @XmlElement(name = "person")
-    public List<FPersonN> getPersons() {
-        return fPersonsn != null ? fPersonsn : FXCollections.observableArrayList();
+    public List<FPersonN> fPersonsn;
+
+    public List<FPersonN> fGetPersonsN() {
+        if (fPersonsn == null) fPersonsn = FXCollections.observableArrayList();
+        return fPersonsn;
     }
 
-    public void setPersons(List<FPersonN> persons) {
+    public void fSetPersonsN(List<FPersonN> persons) {
         this.fPersonsn = persons;
     }
 }

@@ -138,9 +138,9 @@ public class FMainN extends Application {
         try {
             Unmarshaller unmarshaller = fJaxbContextn.createUnmarshaller();
             FPersonListWrapperN persons = (FPersonListWrapperN) unmarshaller.unmarshal(file);
-            fPersonsWrappern.setPersons(persons.getPersons());
+            fPersonsWrappern.fSetPersonsN(persons.fGetPersonsN());
             fpersonDatan.clear();
-            fpersonDatan.addAll(fPersonsWrappern.getPersons());
+            fpersonDatan.addAll(fPersonsWrappern.fGetPersonsN());
             fSetPersonFilePathN(file);
         } catch (Exception e) {
             Dialogs.create()
@@ -154,7 +154,7 @@ public class FMainN extends Application {
         try {
             Marshaller marshaller = fJaxbContextn.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            fPersonsWrappern.setPersons(fpersonDatan);
+            fPersonsWrappern.fSetPersonsN(fpersonDatan);
             marshaller.marshal(fPersonsWrappern, file);
             fSetPersonFilePathN(file);
         } catch (Exception e) {

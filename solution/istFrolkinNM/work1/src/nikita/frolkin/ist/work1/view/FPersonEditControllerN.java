@@ -77,9 +77,13 @@ public class FPersonEditControllerN {
         StringBuilder errorMessage = new StringBuilder();
         errorMessage.append(fCheckEmptyTextFieldN("^[A-Za-z- ]+$", ffirstNameFieldn.getText(), "No valid first name!\n"));
         errorMessage.append(fCheckEmptyTextFieldN("^[A-Za-z- ]+$", flastNameFieldn.getText(), "No valid last name!\n"));
-        errorMessage.append(fCheckEmptyTextFieldN("^[A-Za-z- ,]+$", fstreetFieldn.getText(), "No valid street!\\n"));
+        errorMessage.append(fCheckEmptyTextFieldN("^[A-Za-z- ,]+$", fstreetFieldn.getText(), "No valid street!\n"));
         errorMessage.append(fCheckEmptyTextFieldN("^[A-Za-z- ]+$", fcityFieldn.getText(), "No valid city!\n"));
         errorMessage.append(fCheckEmptyTextFieldN("^[0-9]{4,6}$", fpostalCodeFieldn.getText(), "No valid postal code!\n"));
+        errorMessage.append(fCheckEmptyTextFieldN(
+                "^[0-9-]+$",
+                fbirthdayFieldn.getValue() != null ? fbirthdayFieldn.getValue().toString() : null,
+                "No valid date!\n"));
         if (errorMessage.length() == 0)
             return true;
         else {
