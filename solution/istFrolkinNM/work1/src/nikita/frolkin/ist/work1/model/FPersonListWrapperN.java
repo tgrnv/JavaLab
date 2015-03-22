@@ -15,7 +15,7 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.NONE)
 public class FPersonListWrapperN {
     @XmlElement(name = "person")
-    public List<FPersonN> fPersonsn;
+    private List<FPersonN> fPersonsn;
 
     public List<FPersonN> fGetPersonsN() {
         if (fPersonsn == null) fPersonsn = FXCollections.observableArrayList();
