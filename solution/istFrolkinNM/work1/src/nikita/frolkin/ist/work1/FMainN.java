@@ -48,7 +48,7 @@ public class FMainN extends Application {
                 "images",
                 "address_book_icon.png"
         );
-        this.fprimaryStagen.getIcons().add(new Image("file:" + imagePath));
+        this.fprimaryStagen.getIcons().add(new Image(String.valueOf(getClass().getResource(imagePath))));
         fJaxbContextn = JAXBContext.newInstance(FPersonListWrapperN.class);
         fInitRootN();
         fSetPersonOverviewN();
